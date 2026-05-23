@@ -1,0 +1,6 @@
+{
+  "name": "Tutor di Programmazione AI",
+  "description": "Un assistente e insegnante personale per imparare React, JavaScript, HTML, CSS e Tailwind, con esercizi interattivi ed analisi del codice.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

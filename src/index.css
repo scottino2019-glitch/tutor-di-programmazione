@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --color-eye-bg: var(--app-bg);
+  --color-eye-card: var(--app-card);
+  --color-eye-border: var(--app-border);
+  --color-eye-input: var(--app-input);
+  --color-eye-code-bg: var(--app-code-bg);
+  
+  --color-eye-text-main: var(--app-text-main);
+  --color-eye-text-muted: var(--app-text-muted);
+  --color-eye-text-high: var(--app-text-high);
+
+  --color-eye-accent: var(--app-accent);
+  --color-eye-accent-hover: var(--app-accent-hover);
+  --color-eye-accent-muted: var(--app-accent-muted);
+  --color-eye-accent-text: var(--app-accent-text);
+
+  --font-size-eye-base: var(--font-size-base);
+  --font-size-eye-code: var(--font-size-code);
+}
+
+:root {
+  /* Restful Gemini Zero-Glare Theme - Flat, matte, zero high reflections */
+  --app-bg: #131314;
+  --app-card: #1e1e1f;
+  --app-border: #2c2e30;
+  --app-input: #25272a;
+  --app-text-main: #c4c7c5;       /* Soft warm silver-gray, no harsh white glow */
+  --app-text-muted: #8e918f;      /* Muted charcoal-gray for secondary text */
+  --app-text-high: #e3e3e3;       /* Comfortable soft off-white for titles */
+  --app-code-bg: #0e0e11;         /* Relaxing matte black for code workspaces */
+  --app-accent: #8ab4f8;          /* Calm, desaturated steel blue accent */
+  --app-accent-hover: #7ca5eb;    /* Slightly deeper calm blue for hover effects */
+  --app-accent-muted: rgba(138, 180, 248, 0.08);
+  --app-accent-text: #131314;     /* Crisp high-legibility dark ink for indicators */
+  --font-size-base: 15px;
+  --font-size-code: 14px;
+}
+
+body {
+  background-color: var(--app-bg);
+  color: var(--app-text-main);
+  font-size: var(--font-size-base);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom scrollbar matching eye-friendly colors */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: var(--app-bg);
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--app-border);
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--app-text-muted);
+}
