@@ -5,6 +5,13 @@ import CodeWorkshopTab from "./components/CodeWorkshopTab";
 import ExercisesTab from "./components/ExercisesTab";
 import UserStatsSidebar from "./components/UserStatsSidebar";
 import { Message, CodeAnalysisResult, Exercise, ExerciseReview, UserStats } from "./types";
+import {
+  isClientSideGeminiEnabled,
+  clientSideChat,
+  clientSideAnalyzeCode,
+  clientSideGenerateExercise,
+  clientSideReviewExercise
+} from "./lib/geminiClient";
 
 const LOCAL_STATS_KEY = "coding_tutor_stats_v1";
 
@@ -84,22 +91,28 @@ export default function App() {
     setIsTypingChat(true);
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: updatedMessages }),
-      });
+      let responseText = "";
+      if (isClientSideGeminiEnabled()) {
+        responseText = await clientSideChat(updatedMessages);
+      } else {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: updatedMessages }),
+        });
 
-      if (!response.ok) {
-        throw new Error("Errore di rete durante la conversazione.");
+        if (!response.ok) {
+          throw new Error("Errore di rete durante la conversazione.");
+        }
+
+        const data = await response.json();
+        responseText = data.text;
       }
-
-      const data = await response.json();
       
       const teacherMsg: Message = {
         id: Math.random().toString(36).substring(7),
         sender: "assistant",
-        text: data.text,
+        text: responseText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
@@ -136,17 +149,22 @@ export default function App() {
   // Code analyzer API trigger
   const handleAnalyzeCode = async (code: string, language: string): Promise<CodeAnalysisResult | null> => {
     try {
-      const response = await fetch("/api/analyze-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, language }),
-      });
+      let result: CodeAnalysisResult;
+      if (isClientSideGeminiEnabled()) {
+        result = await clientSideAnalyzeCode(code, language);
+      } else {
+        const response = await fetch("/api/analyze-code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, language }),
+        });
 
-      if (!response.ok) {
-        throw new Error("Errore durante l'ispezione del codice.");
+        if (!response.ok) {
+          throw new Error("Errore durante l'ispezione del codice.");
+        }
+
+        result = await response.json();
       }
-
-      const result: CodeAnalysisResult = await response.json();
 
       // Award XP for analyzing and optimizing code
       const newXp = stats.xp + 15;
@@ -168,6 +186,9 @@ export default function App() {
   // Generate Exercise API trigger
   const handleGenerateExercise = async (topic: string, difficulty: string, category: string): Promise<Exercise | null> => {
     try {
+      if (isClientSideGeminiEnabled()) {
+        return await clientSideGenerateExercise(topic, difficulty, category);
+      }
       const response = await fetch("/api/generate-exercise", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -189,6 +210,9 @@ export default function App() {
   // Review solution API trigger
   const handleReviewExercise = async (exerciseTitle: string, userSolution: string, requirements: string[], category: string): Promise<ExerciseReview | null> => {
     try {
+      if (isClientSideGeminiEnabled()) {
+        return await clientSideReviewExercise(exerciseTitle, userSolution, requirements, category);
+      }
       const response = await fetch("/api/review-exercise", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
